@@ -18,3 +18,16 @@ path = "src/bin/ch_01.rs"
 [[bin]]
 name = "ch-02"
 path = "src/bin/ch_02.rs"
+
+[[bin]]
+name = "ch-03"
+path = "src/bin/ch_03.rs"
+
+[[bin]]
+name = "ch-04"
+path = "src/bin/ch_04.rs"
+
+[[bin]]
+name = "ch-05"
+path = "src/bin/ch_05.rs"
+

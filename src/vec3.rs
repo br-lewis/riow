@@ -5,7 +5,7 @@ use std::ops::{Add, Sub, Mul, Div, Index,
     AddAssign, SubAssign, MulAssign, DivAssign};
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vec3 {
     e: [f64; 3]
 }
@@ -131,6 +131,42 @@ impl Sub<&Vec3> for Vec3 {
     type Output = Vec3;
 
     fn sub(self, other: &Vec3) -> Vec3 {
+        Vec3::with_values(
+            self.e[0] - other.e[0],
+            self.e[1] - other.e[1],
+            self.e[2] - other.e[2],
+        )
+    }
+}
+
+impl Sub for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: &Vec3) -> Vec3 {
+        Vec3::with_values(
+            self.e[0] - other.e[0],
+            self.e[1] - other.e[1],
+            self.e[2] - other.e[2],
+        )
+    }
+}
+
+impl Sub for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: Vec3) -> Vec3 {
+        Vec3::with_values(
+            self.e[0] - other.e[0],
+            self.e[1] - other.e[1],
+            self.e[2] - other.e[2],
+        )
+    }
+}
+
+impl Sub<Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: Vec3) -> Vec3 {
         Vec3::with_values(
             self.e[0] - other.e[0],
             self.e[1] - other.e[1],
