@@ -3,9 +3,11 @@ use std::fs::File;
 use std::io::Write;
 
 use raytracing::{Vec3, Ray};
+use raytracing::hit::{HitableList, Hit};
+use raytracing::sphere::Sphere;
 
 fn main() {
-    let mut f = File::create("ch-04.ppm")
+    let mut f = File::create("ch-05-2.ppm")
         .expect("couldn't open file");
 
     let width = 200;
@@ -16,6 +18,8 @@ fn main() {
     let vertical = Vec3::new(0.0, 2.0, 0.0);
     let origin = Vec3::origin();
 
+    let world = spheres();
+
     write!(f, "P3\n{} {}\n255\n", width, height)
         .expect("couldn't write header");
 
@@ -25,7 +29,7 @@ fn main() {
             let v = y as f64 / height as f64;
 
             let r = Ray::with_values(origin.clone(), &lower_left + u * &horizontal + v * &vertical);
-            let color = color(&r);
+            let color = color(&r, &world);
 
             let ir = (255.99 * color[0]) as u8;
             let ig = (255.99 * color[1]) as u8;
@@ -37,24 +41,25 @@ fn main() {
     }
 }
 
-fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> bool {
-    let oc = r.origin() - center;
-    let a = Vec3::dot(r.direction(), r.direction());
-    let b = 2.0 * Vec3::dot(&oc, r.direction());
-    let c = Vec3::dot(&oc, &oc) - radius * radius;
-    let discriminant = b*b - 4.0*a*c;
+fn spheres() -> HitableList {
+    let h = vec![
+        Box::new(Sphere::with_vals(Vec3::new(0.0, 0.0, -1.0), 0.5)) as Box<dyn Hit>,
+        Box::new(Sphere::with_vals(Vec3::new(0.0, -100.5, -1.0), 100.0)) as Box<dyn Hit>,
+    ];
 
-    discriminant > 0.0
+    HitableList::with_vals(h)
 }
 
 
-fn color(r: &Ray) -> Vec3 {
-    let circle_center = Vec3::new(0.0, 0.0, -1.0);
-    if hit_sphere(&circle_center, 0.5, r) {
-        Vec3::new(1.0, 0.0, 0.0)
-    } else {
-        let unit_dir = Vec3::unit_vector(r.direction());
-        let t = 0.5 * (unit_dir.y() + 1.0);
-        (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
+fn color(r: &Ray, world: &HitableList) -> Vec3 {
+    match world.hit(r, 0.0, std::f64::MAX) {
+        Some(h) => {
+            0.5 * Vec3::new(h.normal.x() + 1.0, h.normal.y() + 1.0, h.normal.z() + 1.0)
+        },
+        None => {
+            let unit_dir = Vec3::unit_vector(r.direction());
+            let t = 0.5 * (unit_dir.y() + 1.0);
+            (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
+        }
     }
 }

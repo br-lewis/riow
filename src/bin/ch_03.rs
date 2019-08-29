@@ -11,10 +11,10 @@ fn main() {
     let width = 200;
     let height = 100;
 
-    let lower_left = Vec3::with_values(-2.0, -1.0, -1.0);
-    let horizontal = Vec3::with_values(4.0, 0.0, 0.0);
-    let vertical = Vec3::with_values(0.0, 2.0, 0.0);
-    let origin = Vec3::new();
+    let lower_left = Vec3::new(-2.0, -1.0, -1.0);
+    let horizontal = Vec3::new(4.0, 0.0, 0.0);
+    let vertical = Vec3::new(0.0, 2.0, 0.0);
+    let origin = Vec3::origin();
 
     write!(f, "P3\n{} {}\n255\n", width, height)
         .expect("couldn't write header");
@@ -40,5 +40,5 @@ fn main() {
 fn color(r: &Ray) -> Vec3 {
     let unit_dir = Vec3::unit_vector(r.direction());
     let t = 0.5 * (unit_dir.y() + 1.0);
-    (1.0 - t) * Vec3::with_values(1.0, 1.0, 1.0) + t * Vec3::with_values(0.5, 0.7, 1.0)
+    (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
 }

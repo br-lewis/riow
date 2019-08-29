@@ -16,7 +16,7 @@ fn main() {
 
     for y in (0..height).rev() {
         for x in 0..width {
-            let color = Vec3::with_values(
+            let color = Vec3::new(
                 x as f64 / width as f64,
                 y as f64 / height as f64,
                 0.2

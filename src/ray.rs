@@ -9,8 +9,8 @@ pub struct Ray {
 impl Ray {
     pub fn new() -> Self {
         Ray{
-            origin: Vec3::new(),
-            dir: Vec3::new(),
+            origin: Vec3::origin(),
+            dir: Vec3::origin(),
         }
     }
 

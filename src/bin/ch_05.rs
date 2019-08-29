@@ -10,10 +10,10 @@ fn main() {
     let width = 200;
     let height = 100;
 
-    let lower_left = Vec3::with_values(-2.0, -1.0, -1.0);
-    let horizontal = Vec3::with_values(4.0, 0.0, 0.0);
-    let vertical = Vec3::with_values(0.0, 2.0, 0.0);
-    let origin = Vec3::new();
+    let lower_left = Vec3::new(-2.0, -1.0, -1.0);
+    let horizontal = Vec3::new(4.0, 0.0, 0.0);
+    let vertical = Vec3::new(0.0, 2.0, 0.0);
+    let origin = Vec3::origin();
 
     write!(f, "P3\n{} {}\n255\n", width, height)
         .expect("couldn't write header");
@@ -53,17 +53,17 @@ fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> f64 {
 
 
 fn color(r: &Ray) -> Vec3 {
-    let circle_center = Vec3::with_values(0.0, 0.0, -1.0);
+    let circle_center = Vec3::new(0.0, 0.0, -1.0);
     let t = hit_sphere(&circle_center, 0.5, r);
 
     if t > 0.0 {
         // get the vector from the origin to the point of contact 
         let normal = Vec3::unit_vector(&(r.point_at_param(t) - circle_center));
         // map it from (-1, 1) to (0, 1) to put it into colorspace range
-        0.5 * Vec3::with_values(normal.x() + 1.0, normal.y() + 1.0, normal.z() + 1.0)
+        0.5 * Vec3::new(normal.x() + 1.0, normal.y() + 1.0, normal.z() + 1.0)
     } else {
         let unit_dir = Vec3::unit_vector(r.direction());
         let t = 0.5 * (unit_dir.y() + 1.0);
-        (1.0 - t) * Vec3::with_values(1.0, 1.0, 1.0) + t * Vec3::with_values(0.5, 0.7, 1.0)
+        (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
     }
 }
