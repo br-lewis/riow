@@ -13,8 +13,8 @@ fn main() {
     let mut f = File::create("ch-06.ppm")
         .expect("couldn't open file");
 
-    let width = 200;
-    let height = 100;
+    let width = 400;
+    let height = 200;
     let num_samples = 100;
 
     let world = spheres();
