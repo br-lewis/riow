@@ -26,8 +26,7 @@ fn main() {
 
     write!(f, "P3\n{} {}\n255\n", width, height).expect("couldn't write header");
 
-    for y in (0..height).rev() {
-        for x in 0..width {
+    for (y, x) in pixel_iter(height, width) {
             let mut avg_color = Vec3::origin();
 
             for _ in 0..num_samples {
@@ -52,6 +51,9 @@ fn main() {
             let ib = (255.99 * avg_color[2]) as u8;
 
             write!(f, "{} {} {}\n", ir, ig, ib).expect("unable to write pixel");
+    }
+    for y in (0..height).rev() {
+        for x in 0..width {
         }
     }
 }
@@ -102,4 +104,12 @@ fn color(r: &Ray, world: &HitableList, bounces: u8) -> Vec3 {
             (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
         }
     }
+}
+
+fn pixel_iter(height: usize, width: usize) -> impl Iterator<Item = (usize, usize)> {
+    (0..height).rev().flat_map(move |y| {
+        (0..width).map(move |x| {
+            (y, x)
+        })
+    })
 }
