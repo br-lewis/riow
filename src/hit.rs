@@ -1,18 +1,19 @@
 
-use std::rc::Rc;
+//use std::rc::Rc;
+use std::sync::Arc;
 
 use super::{Ray, Vec3};
 use super::material::Material;
 
-pub struct HitRecord {
+pub struct HitRecord<'a> {
     pub t: f64,
     pub point: Vec3,
     pub normal: Vec3,
-    pub mat: Rc<dyn Material>,
+    pub mat: Arc<dyn Material + 'a + Sync>,
 }
 
-impl HitRecord {
-    pub fn new(t: f64, point: Vec3, normal: Vec3, mat: Rc<dyn Material>) -> Self {
+impl<'a> HitRecord<'a> {
+    pub fn new(t: f64, point: Vec3, normal: Vec3, mat: Arc<dyn Material + Sync + 'a>) -> Self {
         Self {
             t: t,
             point: point,
@@ -22,24 +23,25 @@ impl HitRecord {
     }
 }
 
-pub trait Hit {
+pub trait Hit: Sync + Send {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
-pub struct HitableList {
-    hitables: Vec<Box<dyn Hit>>,
+#[derive(Clone)]
+pub struct HitableList<'a>{
+    hitables: Arc<Vec<Arc<dyn Hit + 'a>>>,
 }
 
-impl HitableList {
+impl<'a> HitableList<'a> {
     pub fn new() -> Self {
         HitableList{
-            hitables: Vec::new(),
+            hitables: Arc::new(Vec::new()),
         }
     }
 
-    pub fn with_vals(hitables: Vec<Box<dyn Hit>>) -> Self {
+    pub fn with_vals(hitables: Vec<Arc<dyn Hit>>) -> Self {
         HitableList {
-            hitables: hitables,
+            hitables: Arc::new(hitables),
         }
     }
 
