@@ -12,7 +12,7 @@ pub use lambertian::Lambertian;
 pub use metal::Metal;
 
 pub trait Material {
-    fn scatter(&self, ray_in: &Ray, rec: HitRecord) -> Option<(Ray, Vec3)>;
+    fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)>;
 }
 
 fn random_in_unit_sphere() -> Vec3 {

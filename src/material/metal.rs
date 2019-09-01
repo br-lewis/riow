@@ -17,9 +17,9 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn scatter(&self, ray_in: &Ray, rec: HitRecord) -> Option<(Ray, Vec3)> {
+    fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
         let reflected = reflect(&Vec3::unit_vector(ray_in.direction()), &rec.normal);
-        let scattered = Ray::with_values(rec.point, reflected);
+        let scattered = Ray::with_values(rec.point.clone(), reflected);
 
         if Vec3::dot(scattered.direction(), &rec.normal) > 0.0 {
             Some((scattered, self.albedo.clone()))

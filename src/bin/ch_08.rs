@@ -1,4 +1,3 @@
-
 use std::fs::File;
 use std::io::Write;
 use std::rc::Rc;
@@ -7,9 +6,9 @@ use rand::Rng;
 
 use raytracing::camera::Camera;
 use raytracing::hit::{Hit, HitableList};
+use raytracing::material::{Lambertian, Metal};
 use raytracing::sphere::Sphere;
 use raytracing::{Ray, Vec3};
-use raytracing::material::Lambertian;
 
 const MAX_BOUNCE: u8 = 10;
 
@@ -59,44 +58,48 @@ fn main() {
 
 fn spheres() -> HitableList {
     let h: Vec<Box<dyn Hit>> = vec![
-        Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, Rc::new(Lambertian::new(Vec3::new(0.8, 0.3, 0.3))))),
-        Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0))))),
+        Box::new(Sphere::new(
+            Vec3::new(0.0, 0.0, -1.0),
+            0.5,
+            Rc::new(Lambertian::new(Vec3::new(0.8, 0.3, 0.3))),
+        )),
+        Box::new(Sphere::new(
+            Vec3::new(0.0, -100.5, -1.0),
+            100.0,
+            Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0))),
+        )),
+        Box::new(Sphere::new(
+            Vec3::new(1.0, 0.0, -1.0),
+            0.5,
+            Rc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2))),
+        )),
+        Box::new(Sphere::new(
+            Vec3::new(-1.0, 0.0, -1.0),
+            0.5,
+            Rc::new(Metal::new(Vec3::new(0.8, 0.8, 0.8))),
+        )),
     ];
 
     HitableList::with_vals(h)
 }
 
 fn color(r: &Ray, world: &HitableList, bounces: u8) -> Vec3 {
-    if bounces >= MAX_BOUNCE {
-        let unit_dir = Vec3::unit_vector(r.direction());
-        let t = 0.5 * (unit_dir.y() + 1.0);
-
-        return (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
-    }
-
     match world.hit(r, 0.001, std::f64::MAX) {
         Some(h) => {
-            let target = &h.point + &h.normal + random_in_unit_sphere();
-            0.5 * color(
-                &Ray::with_values(h.point.clone(), &target - &h.point),
-                world,
-                bounces + 1,
-            )
+            if bounces >= MAX_BOUNCE {
+                return Vec3::new(0.0, 0.0, 0.0);
+            }
+            match h.mat.scatter(&r, &h) {
+                Some((scattered, attenuation)) => {
+                    attenuation * color(&scattered, world, bounces + 1)
+                }
+                None => Vec3::new(0.0, 0.0, 0.0),
+            }
         }
         None => {
             let unit_dir = Vec3::unit_vector(r.direction());
             let t = 0.5 * (unit_dir.y() + 1.0);
             (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
-        }
-    }
-}
-
-fn random_in_unit_sphere() -> Vec3 {
-    let mut rng = rand::thread_rng();
-    loop {
-        let v = 2.0 * Vec3::new(rng.gen(), rng.gen(), rng.gen()) - Vec3::new(1.0, 1.0, 1.0);
-        if v.sq_len() >= 1.0 {
-            return v;
         }
     }
 }

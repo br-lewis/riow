@@ -18,9 +18,9 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, _ray_in: &Ray, rec: HitRecord) -> Option<(Ray, Vec3)> {
+    fn scatter(&self, _ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
         let target = &rec.point + &rec.normal + random_in_unit_sphere();
-        let scattered = Ray::with_values(rec.point.clone(), target-rec.point);
+        let scattered = Ray::with_values(rec.point.clone(), target-rec.point.clone());
 
         Some((scattered, self.albedo.clone()))
     }
