@@ -1,18 +1,23 @@
 
+use std::rc::Rc;
+
 use super::{Ray, Vec3};
+use super::material::Material;
 
 pub struct HitRecord {
     pub t: f64,
     pub point: Vec3,
     pub normal: Vec3,
+    pub mat: Rc<dyn Material>,
 }
 
 impl HitRecord {
-    pub fn new(t: f64, point: Vec3, normal: Vec3) -> Self {
+    pub fn new(t: f64, point: Vec3, normal: Vec3, mat: Rc<dyn Material>) -> Self {
         Self {
             t: t,
             point: point,
             normal: normal,
+            mat: mat,
         }
     }
 }

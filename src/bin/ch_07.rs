@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::Write;
+use std::rc::Rc;
 
 use rand::Rng;
 
@@ -7,6 +8,7 @@ use raytracing::camera::Camera;
 use raytracing::hit::{Hit, HitableList};
 use raytracing::sphere::Sphere;
 use raytracing::{Ray, Vec3};
+use raytracing::material::Lambertian;
 
 const MAX_BOUNCE: u8 = 10;
 
@@ -56,9 +58,8 @@ fn main() {
 
 fn spheres() -> HitableList {
     let h: Vec<Box<dyn Hit>> = vec![
-        Box::new(Sphere::with_vals(Vec3::new(0.0, 0.0, -1.0), 0.5)),
-        Box::new(Sphere::with_vals(Vec3::new(0.0, -100.5, -1.0), 100.0)),
-        Box::new(Sphere::with_vals(Vec3::new(1.0, 0.0, -1.0), 0.2)),
+        Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, Rc::new(Lambertian::new(Vec3::new(0.8, 0.3, 0.3))))),
+        Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0))))),
     ];
 
     HitableList::with_vals(h)

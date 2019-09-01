@@ -1,10 +1,12 @@
 
 use std::fs::File;
 use std::io::Write;
+use std::rc::Rc;
 
 use raytracing::{Vec3, Ray};
 use raytracing::hit::{HitableList, Hit};
 use raytracing::sphere::Sphere;
+use raytracing::material::Lambertian;
 
 fn main() {
     let mut f = File::create("ch-05-2.ppm")
@@ -42,9 +44,9 @@ fn main() {
 }
 
 fn spheres() -> HitableList {
-    let h = vec![
-        Box::new(Sphere::with_vals(Vec3::new(0.0, 0.0, -1.0), 0.5)) as Box<dyn Hit>,
-        Box::new(Sphere::with_vals(Vec3::new(0.0, -100.5, -1.0), 100.0)) as Box<dyn Hit>,
+    let h: Vec<Box<dyn Hit>> = vec![
+        Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, Rc::new(Lambertian::new(Vec3::new(0.8, 0.3, 0.3))))),
+        Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, Rc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0))))),
     ];
 
     HitableList::with_vals(h)

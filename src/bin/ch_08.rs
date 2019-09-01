@@ -5,27 +5,27 @@ use std::rc::Rc;
 
 use rand::Rng;
 
-use raytracing::{Vec3, Ray};
-use raytracing::hit::{HitableList, Hit};
-use raytracing::sphere::Sphere;
 use raytracing::camera::Camera;
+use raytracing::hit::{Hit, HitableList};
+use raytracing::sphere::Sphere;
+use raytracing::{Ray, Vec3};
 use raytracing::material::Lambertian;
 
-fn main() {
-    let mut f = File::create("ch-06.ppm")
-        .expect("couldn't open file");
+const MAX_BOUNCE: u8 = 10;
 
-    let width = 400;
-    let height = 200;
-    let num_samples = 100;
+fn main() {
+    let mut f = File::create("ch-08.ppm").expect("couldn't open file");
+
+    let width = 800;
+    let height = 400;
+    let num_samples = 20;
 
     let world = spheres();
     let camera = Camera::new();
 
     let mut rng = rand::thread_rng();
 
-    write!(f, "P3\n{} {}\n255\n", width, height)
-        .expect("couldn't write header");
+    write!(f, "P3\n{} {}\n255\n", width, height).expect("couldn't write header");
 
     for y in (0..height).rev() {
         for x in 0..width {
@@ -39,16 +39,20 @@ fn main() {
 
                 let r = camera.get_ray(u, v);
                 //let p = r.point_at_param(2.0);
-                avg_color += color(&r, &world);
+                avg_color += color(&r, &world, 0);
             }
             avg_color /= num_samples as f64;
+            avg_color = Vec3::new(
+                avg_color[0].sqrt(),
+                avg_color[1].sqrt(),
+                avg_color[2].sqrt(),
+            );
 
             let ir = (255.99 * avg_color[0]) as u8;
             let ig = (255.99 * avg_color[1]) as u8;
             let ib = (255.99 * avg_color[2]) as u8;
 
-            write!(f, "{} {} {}\n", ir, ig, ib)
-                .expect("unable to write pixel");
+            write!(f, "{} {} {}\n", ir, ig, ib).expect("unable to write pixel");
         }
     }
 }
@@ -62,16 +66,37 @@ fn spheres() -> HitableList {
     HitableList::with_vals(h)
 }
 
+fn color(r: &Ray, world: &HitableList, bounces: u8) -> Vec3 {
+    if bounces >= MAX_BOUNCE {
+        let unit_dir = Vec3::unit_vector(r.direction());
+        let t = 0.5 * (unit_dir.y() + 1.0);
 
-fn color(r: &Ray, world: &HitableList) -> Vec3 {
-    match world.hit(r, 0.0, std::f64::MAX) {
+        return (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
+    }
+
+    match world.hit(r, 0.001, std::f64::MAX) {
         Some(h) => {
-            0.5 * Vec3::new(h.normal.x() + 1.0, h.normal.y() + 1.0, h.normal.z() + 1.0)
-        },
+            let target = &h.point + &h.normal + random_in_unit_sphere();
+            0.5 * color(
+                &Ray::with_values(h.point.clone(), &target - &h.point),
+                world,
+                bounces + 1,
+            )
+        }
         None => {
             let unit_dir = Vec3::unit_vector(r.direction());
             let t = 0.5 * (unit_dir.y() + 1.0);
             (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
+        }
+    }
+}
+
+fn random_in_unit_sphere() -> Vec3 {
+    let mut rng = rand::thread_rng();
+    loop {
+        let v = 2.0 * Vec3::new(rng.gen(), rng.gen(), rng.gen()) - Vec3::new(1.0, 1.0, 1.0);
+        if v.sq_len() >= 1.0 {
+            return v;
         }
     }
 }
