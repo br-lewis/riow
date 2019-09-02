@@ -11,7 +11,7 @@ use super::hit::HitRecord;
 pub use lambertian::Lambertian;
 pub use metal::Metal;
 
-pub trait Material {
+pub trait Material: Send + Sync {
     fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)>;
 }
 

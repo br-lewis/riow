@@ -5,15 +5,15 @@ use std::sync::Arc;
 use super::{Ray, Vec3};
 use super::material::Material;
 
-pub struct HitRecord<'a> {
+pub struct HitRecord {
     pub t: f64,
     pub point: Vec3,
     pub normal: Vec3,
-    pub mat: Arc<dyn Material + 'a + Sync>,
+    pub mat: Arc<dyn Material>,
 }
 
-impl<'a> HitRecord<'a> {
-    pub fn new(t: f64, point: Vec3, normal: Vec3, mat: Arc<dyn Material + Sync + 'a>) -> Self {
+impl HitRecord {
+    pub fn new(t: f64, point: Vec3, normal: Vec3, mat: Arc<dyn Material>) -> Self {
         Self {
             t: t,
             point: point,
@@ -28,11 +28,11 @@ pub trait Hit: Sync + Send {
 }
 
 #[derive(Clone)]
-pub struct HitableList<'a>{
-    hitables: Arc<Vec<Arc<dyn Hit + 'a>>>,
+pub struct HitableList{
+    hitables: Arc<Vec<Arc<dyn Hit>>>,
 }
 
-impl<'a> HitableList<'a> {
+impl HitableList {
     pub fn new() -> Self {
         HitableList{
             hitables: Arc::new(Vec::new()),

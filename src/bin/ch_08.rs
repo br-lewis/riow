@@ -60,7 +60,7 @@ fn main() {
     }
 }
 
-fn spheres<'a>() -> HitableList<'a> {
+fn spheres() -> HitableList {
     let h: Vec<Arc<dyn Hit>> = vec![
         Arc::new(Sphere::new(
             Vec3::new(0.0, 0.0, -1.0),
