@@ -1,7 +1,7 @@
 
 #![allow(dead_code)]
 
-use std::ops::{Add, Sub, Mul, Div, Index,
+use std::ops::{Add, Sub, Mul, Div, Index, Neg,
     AddAssign, SubAssign, MulAssign, DivAssign};
 use std::fmt;
 
@@ -200,6 +200,30 @@ impl Mul for Vec3 {
     }
 }
 
+impl Mul for &Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: &Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] * other.e[0],
+            self.e[1] * other.e[1],
+            self.e[2] * other.e[2],
+        )
+    }
+}
+
+impl Mul<Vec3> for &Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] * other.e[0],
+            self.e[1] * other.e[1],
+            self.e[2] * other.e[2],
+        )
+    }
+}
+
 impl Div<&Vec3> for Vec3 {
     type Output = Vec3;
 
@@ -213,6 +237,18 @@ impl Div<&Vec3> for Vec3 {
 }
 
 impl Mul<f64> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, t: f64) -> Vec3 {
+        Vec3::new(
+            self.e[0] * t,
+            self.e[1] * t,
+            self.e[2] * t,
+        )
+    }
+}
+
+impl Mul<f64> for &Vec3 {
     type Output = Vec3;
 
     fn mul(self, t: f64) -> Vec3 {
@@ -330,6 +366,30 @@ impl Index<usize> for Vec3 {
         }
         */
         &self.e[i]
+    }
+}
+
+impl Neg for Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Vec3 {
+        Vec3::new(
+            -self.e[0],
+            -self.e[1],
+            -self.e[2],
+        )
+    }
+}
+
+impl Neg for &Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Vec3 {
+        Vec3::new(
+            -self.e[0],
+            -self.e[1],
+            -self.e[2],
+        )
     }
 }
 
