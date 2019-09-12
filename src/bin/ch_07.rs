@@ -21,7 +21,9 @@ fn main() {
     let num_samples = 20;
 
     let world = spheres();
-    let camera = Camera::new(PI/4.0, 2.0/1.0);
+
+    let aspect = width as f64/height as f64;
+    let camera = Camera::new(PI/4.0, aspect);
 
     let mut rng = rand::thread_rng();
 

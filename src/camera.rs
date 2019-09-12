@@ -13,7 +13,7 @@ pub struct Camera {
 
 impl Camera {
     pub fn new(v_fov:f64, aspect: f64) -> Self {
-        let theta = v_fov * PI;
+        let theta = v_fov * PI / 180.0;
         let half_height = (theta / 2.0).tan();
         let half_width = aspect * half_height;
 
