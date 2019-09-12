@@ -1,14 +1,13 @@
 use std::fs::File;
 use std::io::Write;
 use std::sync::Arc;
-use std::f64::consts::PI;
 
 use rand::Rng;
 use rayon::prelude::*;
 
 use raytracing::camera::Camera;
 use raytracing::hit::{Hit, HitableList};
-use raytracing::material::{Lambertian};
+use raytracing::material::{Lambertian, Dielectric, Metal};
 use raytracing::sphere::Sphere;
 use raytracing::{Ray, Vec3};
 
@@ -19,12 +18,15 @@ fn main() {
 
     let width = 800;
     let height = 400;
-    let num_samples = 50;
+    let num_samples = 200;
 
     let world = spheres();
 
     let aspect = width as f64/height as f64;
-    let camera = Camera::new(90.0, aspect);
+    let pos = Vec3::new(-2.0, 2.0, 1.0);
+    let look_at = Vec3::new(0.0, 0.0, -1.0);
+    let v_up = Vec3::new(0.0, 1.0, 0.0);
+    let camera = Camera::new(pos, look_at, v_up, 90.0, aspect);
 
     write!(f, "P3\n{} {}\n255\n", width, height).expect("couldn't write header");
 
@@ -40,7 +42,6 @@ fn main() {
                 let v = (*y as f64 + yr) / height as f64;
 
                 let r = camera.get_ray(u, v);
-                //let p = r.point_at_param(2.0);
                 avg_color += color(&r, &world.clone(), 0);
             }
             avg_color /= num_samples as f64;
@@ -54,7 +55,6 @@ fn main() {
         }).collect();
 
     for (_y, _x, avg_color) in pixels {
-        println!("{}", avg_color);
         let ir = (255.99 * avg_color[0]) as u8;
         let ig = (255.99 * avg_color[1]) as u8;
         let ib = (255.99 * avg_color[2]) as u8;
@@ -64,19 +64,32 @@ fn main() {
 }
 
 fn spheres() -> HitableList {
-    let radius = (PI / 4.0).cos();
-
     let h: Vec<Arc<dyn Hit>> = vec![
         Arc::new(Sphere::new(
-            Vec3::new(-radius, 0.0, -1.0),
-            radius,
-            Arc::new(Lambertian::new(Vec3::new(0.0, 0.0, 1.0))),
+            Vec3::new(0.0, 0.0, -1.0),
+            0.5,
+            Arc::new(Lambertian::new(Vec3::new(0.8, 0.3, 0.3))),
         )),
         Arc::new(Sphere::new(
-            Vec3::new(radius, 0.0, -1.0),
-            radius,
-            Arc::new(Lambertian::new(Vec3::new(1.0, 0.0, 0.0))),
+            Vec3::new(0.0, -100.5, -1.0),
+            100.0,
+            Arc::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0))),
         )),
+        Arc::new(Sphere::new(
+            Vec3::new(1.0, 0.0, -1.0),
+            0.5,
+            Arc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2), 1.0)),
+        )),
+        Arc::new(Sphere::new(
+            Vec3::new(-1.0, 0.0, -1.0),
+            0.5,
+            Arc::new(Dielectric::new(1.5))
+            )),
+        Arc::new(Sphere::new(
+            Vec3::new(-1.0, 0.0, -1.0),
+            -0.45,
+            Arc::new(Dielectric::new(1.5))
+            )),
     ];
 
     HitableList::with_vals(h)

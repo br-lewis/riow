@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::Write;
 use std::sync::Arc;
-use std::f64::consts::PI;
 
 use rand::Rng;
 
@@ -21,7 +20,10 @@ fn main() {
     let world = spheres();
 
     let aspect = width as f64/height as f64;
-    let camera = Camera::new(PI/4.0, aspect);
+    let pos = Vec3::origin();
+    let look_at = Vec3::new(0.0, 0.0, -1.0);
+    let v_up = Vec3::new(0.0, 1.0, 0.0);
+    let camera = Camera::new(pos, look_at, v_up, 90.0, aspect);
 
     let mut rng = rand::thread_rng();
 
