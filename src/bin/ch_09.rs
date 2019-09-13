@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::Write;
 use std::sync::Arc;
-use std::f64::consts::PI;
 
 use rand::Rng;
 use rayon::prelude::*;
@@ -27,7 +26,9 @@ fn main() {
     let pos = Vec3::origin();
     let look_at = Vec3::new(0.0, 0.0, -1.0);
     let v_up = Vec3::new(0.0, 1.0, 0.0);
-    let camera = Camera::new(pos, look_at, v_up, 90.0, aspect);
+    let focus_dist = (&pos - &look_at).len();
+    let aperture = 0.1;
+    let camera = Camera::new(pos, look_at, v_up, 20.0, aspect, aperture, focus_dist);
 
     write!(f, "P3\n{} {}\n255\n", width, height).expect("couldn't write header");
 
