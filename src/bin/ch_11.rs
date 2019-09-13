@@ -27,7 +27,7 @@ fn main() {
     let look_at = Vec3::new(0.0, 0.0, -1.0);
     let v_up = Vec3::new(0.0, 1.0, 0.0);
     let focus_dist = (&pos - &look_at).len();
-    let aperture = 5.0;
+    let aperture = 0.1;
     let camera = Camera::new(pos, look_at, v_up, 20.0, aspect, aperture, focus_dist);
 
     write!(f, "P3\n{} {}\n255\n", width, height).expect("couldn't write header");
