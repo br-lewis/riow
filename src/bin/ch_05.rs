@@ -46,7 +46,6 @@ fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> f64 {
     if discriminant < 0.0 {
         -1.0
     } else {
-        println!("{}", discriminant);
         (-b - discriminant.sqrt()) / (2.0 * a)
     }
 }

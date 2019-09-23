@@ -13,8 +13,8 @@ use raytracing::{Ray, Vec3};
 fn main() {
     let mut f = File::create("ch-06.ppm").expect("couldn't open file");
 
-    let width = 400;
-    let height = 200;
+    let width = 800;
+    let height = 400;
     let num_samples = 100;
 
     let world = spheres();
@@ -24,8 +24,8 @@ fn main() {
     let look_at = Vec3::new(0.0, 0.0, -1.0);
     let v_up = Vec3::new(0.0, 1.0, 0.0);
     let focus_dist = (&pos - &look_at).len();
-    let aperture = 0.1;
-    let camera = Camera::new(pos, look_at, v_up, 20.0, aspect, aperture, focus_dist);
+    let aperture = 0.01;
+    let camera = Camera::new(pos, look_at, v_up, 90.0, aspect, aperture, focus_dist);
 
     let mut rng = rand::thread_rng();
 
